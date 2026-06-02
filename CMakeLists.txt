@@ -28,6 +28,13 @@ if (ENABLE_SANITIZERS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_link_options   (-fsanitize=address,undefined)
 endif()
 
+# ── Source files ──────────────────────────────────────────────────────────────
+set(MINISQL_SOURCES
+    src/repl/repl.cpp
+)
+
+# ── Library target (used by the exe and future tests) ─────────────────────────
+add_library(minisql_lib STATIC ${MINISQL_SOURCES})
 target_include_directories(minisql_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # ── Executable ────────────────────────────────────────────────────────────────
