@@ -1,7 +1,8 @@
-#include "repl/repl.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <string>
+
+#include "repl/repl.hpp"
 
 int main(int argc, char *argv[]) {
   std::string db_path = "minisql_data";
