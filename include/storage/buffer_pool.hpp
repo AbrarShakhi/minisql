@@ -3,6 +3,7 @@
 #include "storage/page.hpp"
 #include <list>
 #include <memory>
+#include <queue>
 #include <unordered_map>
 #include <vector>
 
@@ -49,5 +50,12 @@ private:
   std::unordered_map<FrameId, std::list<FrameId>::iterator> lru_pos_;
   std::list<FrameId> free_list_;
 };
+
+/**
+  TODO: Right now lru_list_ is using LinkedList.\
+  Accessing the LRU list might be slower.\
+  So, Also need a Queue like data structure to pop oldest and app recent.
+  Needs continues Circuler Queue datastrusture.
+*/
 
 } // namespace minisql
