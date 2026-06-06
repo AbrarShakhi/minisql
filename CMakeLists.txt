@@ -30,9 +30,13 @@ endif()
 
 # ── Source files ──────────────────────────────────────────────────────────────
 set(MINISQL_SOURCES
+    src/common/types.cpp
+
     src/storage/page.cpp
     src/storage/disk_manager.cpp
     src/storage/buffer_pool.cpp
+
+    src/sql/ast.cpp
 
     src/repl/repl.cpp
 )
