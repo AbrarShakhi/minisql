@@ -16,6 +16,17 @@ enum class ExprKind {
   UNARY,   // NOT expr
 };
 
+enum class BinOp {
+  EQ,
+  NEQ,
+  LT,
+  GT,
+  LTE,
+  GTE,
+  AND,
+  OR,
+};
+
 struct Expr;
 using ExprPtr = std::unique_ptr<Expr>;
 
@@ -29,6 +40,7 @@ struct Expr {
   std::string col_name;
 
   // BINARY
+  BinOp bin_op{};
   ExprPtr left;
   ExprPtr right;
 
@@ -43,6 +55,7 @@ struct Expr {
 
   static ExprPtr make_literal(Value v);
   static ExprPtr make_column(std::string name);
+  static ExprPtr make_binary(BinOp op, ExprPtr l, ExprPtr r);
   static ExprPtr make_not(ExprPtr operand);
 };
 
