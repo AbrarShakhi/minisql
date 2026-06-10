@@ -36,6 +36,9 @@ set(MINISQL_SOURCES
     src/storage/disk_manager.cpp
     src/storage/buffer_pool.cpp
 
+    src/btree/btree_node.cpp
+    src/btree/btree.cpp
+
     src/sql/ast.cpp
 
     src/repl/repl.cpp
