@@ -4,7 +4,10 @@
 #include <string>
 
 #include "common/error.hpp"
+#include "executor/executor.hpp"
 #include "repl/repl.hpp"
+#include "sql/lexer.hpp"
+#include "sql/parser.hpp"
 #include "storage/buffer_pool.hpp"
 #include "storage/disk_manager.hpp"
 
@@ -17,10 +20,14 @@ struct Repl::Impl {
   std::string db_path;
   std::unique_ptr<DiskManager> disk_mgr;
   std::unique_ptr<BufferPool> buf_pool;
+  std::unique_ptr<Catalog> catalog;
+  std::unique_ptr<Executor> executor;
 
   explicit Impl(const std::string &path)
       : db_path(path), disk_mgr(std::make_unique<DiskManager>(path + ".db")),
-        buf_pool(std::make_unique<BufferPool>(*disk_mgr)) {}
+        buf_pool(std::make_unique<BufferPool>(*disk_mgr)),
+        catalog(std::make_unique<Catalog>(path + ".cat")),
+        executor(std::make_unique<Executor>(*catalog, *buf_pool)) {}
 };
 
 // ── Repl ─────────────────────────────────────────────────────────────────────
@@ -61,6 +68,7 @@ void Repl::run() {
   }
 
   impl_->buf_pool->flush_all();
+  impl_->catalog->flush();
 }
 
 bool Repl::handle_meta_command(const std::string &line) {
@@ -90,18 +98,49 @@ bool Repl::handle_meta_command(const std::string &line) {
            "  Types: INTEGER, REAL, TEXT, BLOB\n";
     return true;
   }
-  if (cmd == ".tables")
-    return false;
-  if (cmd == ".schema")
-    return false;
-
+  if (cmd == ".tables") {
+    auto names = impl_->catalog->table_names();
+    if (names.empty())
+      std::cout << "(no tables)\n";
+    else
+      for (const auto &n : names)
+        std::cout << n << '\n';
+    return true;
+  }
+  if (cmd == ".schema") {
+    std::string target;
+    iss >> target;
+    auto names = impl_->catalog->table_names();
+    for (const auto &n : names) {
+      if (!target.empty() && n != target)
+        continue;
+      const auto &meta = impl_->catalog->get_table(n);
+      std::cout << "CREATE TABLE " << n << " (\n";
+      const auto &cols = meta.schema.columns();
+      for (size_t i = 0; i < cols.size(); ++i) {
+        std::cout << "  " << cols[i].name << ' ' << to_string(cols[i].type);
+        if (!cols[i].nullable)
+          std::cout << " NOT NULL";
+        if (i + 1 < cols.size())
+          std::cout << ',';
+        std::cout << '\n';
+      }
+      std::cout << ");\n";
+    }
+    return true;
+  }
   std::cout << "Unknown command: " << cmd << "  (type .help for help)\n";
   return true;
 }
 
 void Repl::handle_sql(const std::string &sql) {
   try {
-
+    Lexer lexer(sql);
+    auto tokens = lexer.tokenise();
+    Parser parser(std::move(tokens));
+    auto stmt = parser.parse();
+    auto result = impl_->executor->execute(*stmt);
+    result.print();
   } catch (const DatabaseError &e) {
     std::cerr << "Error: " << e.what() << '\n';
   } catch (const std::exception &e) {
