@@ -10,12 +10,12 @@ recursive-descent parser, and manages disk pages with an LRU buffer pool.
 
 | File | What it covers |
 |---|---|
-| [sql-reference.md](sql-reference.md) | Every SQL statement and clause with full syntax and examples |
-| [storage.md](storage.md) | How data is physically stored on disk (pages, B+ tree, file formats) |
-| [query-processing.md](query-processing.md) | How a SQL string becomes a result: Lexer → Parser → Executor |
-| [architecture.md](architecture.md) | High-level module map, data-flow diagram, design principles |
-| [tutorials.md](tutorials.md) | Step-by-step walkthroughs for common tasks |
-| [limitations.md](limitations.md) | Known gaps, constraints, and things that are not yet supported |
+| [sql-reference.md](docs/sql-reference.md) | Every SQL statement and clause with full syntax and examples |
+| [storage.md](docs/storage.md) | How data is physically stored on disk (pages, B+ tree, file formats) |
+| [query-processing.md](docs/query-processing.md) | How a SQL string becomes a result: Lexer → Parser → Executor |
+| [architecture.md](docs/architecture.md) | High-level module map, data-flow diagram, design principles |
+| [tutorials.md](docs/tutorials.md) | Step-by-step walkthroughs for common tasks |
+| [limitations.md](docs/limitations.md) | Known gaps, constraints, and things that are not yet supported |
 
 ---
 
